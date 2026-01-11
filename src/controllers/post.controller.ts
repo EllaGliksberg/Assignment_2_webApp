@@ -1,21 +1,52 @@
 import { Request, Response } from 'express';
 import Post from '../models/Post';
 
-export const createPost = async (req: Request, res: Response) => {
-    const { title, content, senderId } = req.body;
+// Get All Posts 
+export const getPosts = async (req: Request, res: Response) => {
     try {
-        const newPost = await Post.create({ title, content, senderId });
-        res.status(201).json(newPost);
+        const senderId = req.query.sender;
+        let posts;
+
+        if (senderId) {
+            posts = await Post.find({ senderId: senderId });
+        } else {
+            posts = await Post.find();
+        }
+
+        res.status(200).json(posts);
+    } catch (error) {
+        res.status(400).json({ message: "Error fetching posts", error });
+    }
+};
+
+// Get Post by ID
+export const getPostById = async (req: Request, res: Response) => {
+    try {
+        const post = await Post.findById(req.params.id);
+        if (!post) return res.status(404).json({ message: "Post not found" });
+        res.status(200).json(post);
+    } catch (error) {
+        res.status(400).json({ message: "Error fetching post", error });
+    }
+};
+
+// Create Post
+export const createPost = async (req: Request, res: Response) => {
+    try {
+        const post = await Post.create(req.body);
+        res.status(201).json(post);
     } catch (error) {
         res.status(400).json({ message: "Error creating post", error });
     }
 };
 
-export const getAllPosts = async (req: Request, res: Response) => {
+// Update Post
+export const updatePost = async (req: Request, res: Response) => {
     try {
-        const posts = await Post.find().populate('senderId', 'username email');
-        res.status(200).json(posts);
+        const updatedPost = await Post.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!updatedPost) return res.status(404).json({ message: "Post not found" });
+        res.status(200).json(updatedPost);
     } catch (error) {
-        res.status(400).json({ message: "Error fetching posts", error });
+        res.status(400).json({ message: "Error updating post", error });
     }
 };
