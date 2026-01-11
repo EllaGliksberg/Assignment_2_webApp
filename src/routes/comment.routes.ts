@@ -1,9 +1,11 @@
 import { Router } from 'express';
-import { addComment } from '../controllers/comment.controller';
-import { requireAuth } from '../middlewares/auth.middleware';
+import { addComment, getComments, updateComment, deleteComment } from '../controllers/comment.controller';
 
 const router = Router();
 
-router.post('/', requireAuth, addComment);
+router.post('/', addComment);
+router.get('/', getComments);
+router.put('/:id', updateComment);
+router.delete('/:id', deleteComment);
 
 export default router;
