@@ -1,4 +1,5 @@
 import express from 'express';
+import dotenv from "dotenv";
 import bodyParser from 'body-parser';
 import { json } from 'body-parser';
 import authRoutes from './routes/auth.routes';
@@ -7,10 +8,11 @@ import postRoutes from './routes/post.routes';
 import commentRoutes from './routes/comment.routes';
 import { errorHandler } from './middlewares/error.middleware';
 
+dotenv.config();
 const app = express();
 
-app.use(json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -19,5 +21,7 @@ app.use('/api/comments', commentRoutes);
 
 // global error handler
 app.use(errorHandler);
-
+app.get("/", (req, res) => {
+    res.send("Hello World! Server is up and DB connection is initiated.");
+});
 export default app;
