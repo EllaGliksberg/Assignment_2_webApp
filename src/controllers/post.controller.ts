@@ -1,14 +1,21 @@
 import { Request, Response } from 'express';
+import Post from '../models/Post';
 
-export async function createPost(req: Request, res: Response) {
-  res.status(201).json({ message: 'Post created (placeholder)' });
-}
+export const createPost = async (req: Request, res: Response) => {
+    const { title, content, senderId } = req.body;
+    try {
+        const newPost = await Post.create({ title, content, senderId });
+        res.status(201).json(newPost);
+    } catch (error) {
+        res.status(400).json({ message: "Error creating post", error });
+    }
+};
 
-export async function getPost(req: Request, res: Response) {
-  const { id } = req.params;
-  res.json({ id, title: 'Sample post', content: 'This is a placeholder post.' });
-}
-
-export async function listPosts(req: Request, res: Response) {
-  res.json([{ id: '1', title: 'First post', content: '...' }]);
-}
+export const getAllPosts = async (req: Request, res: Response) => {
+    try {
+        const posts = await Post.find().populate('senderId', 'username email');
+        res.status(200).json(posts);
+    } catch (error) {
+        res.status(400).json({ message: "Error fetching posts", error });
+    }
+};

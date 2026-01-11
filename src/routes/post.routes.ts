@@ -1,11 +1,9 @@
 import { Router } from 'express';
-import { createPost, getPost, listPosts } from '../controllers/post.controller';
-import { requireAuth } from '../middlewares/auth.middleware';
+import { createPost, getAllPosts } from '../controllers/post.controller';
 
 const router = Router();
 
-router.post('/', requireAuth, createPost);
-router.get('/', listPosts);
-router.get('/:id', getPost);
+router.post('/', createPost);
+router.get('/', getAllPosts);
 
 export default router;
