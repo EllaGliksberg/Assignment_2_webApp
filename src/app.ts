@@ -16,6 +16,7 @@ app.use('/api/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/posts', postRoutes)
 
 // global error handler
 app.use(errorHandler);
