@@ -87,3 +87,21 @@ export async function refreshToken(req: Request, res: Response) {
   }
 }
 
+export async function logout(req: Request, res: Response) {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) return res.status(400).json({ message: 'refreshToken required' });
+
+    const user = await User.findOne({ refreshTokens: refreshToken });
+    if (!user) return res.status(200).json({ message: 'Logged out' });
+
+    user.refreshTokens = (user.refreshTokens || []).filter((t: string) => t !== refreshToken);
+    await user.save();
+
+    return res.status(200).json({ message: 'Logged out' });
+  } catch (err: any) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+}
