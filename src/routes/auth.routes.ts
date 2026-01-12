@@ -4,6 +4,7 @@ import { login, register, refreshToken, logout } from '../controllers/auth.contr
 const router = Router();
 
 router.post('/register', register);
+router.post('/login', login);
 
 
 export default router;
