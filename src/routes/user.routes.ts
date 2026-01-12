@@ -1,10 +1,9 @@
 import { Router } from 'express';
-import { getUser, updateUser } from '../controllers/user.controller';
-import { requireAuth } from '../middlewares/auth.middleware';
+import { getAllUsers, getUserById } from '../controllers/user.controller';
 
 const router = Router();
 
-router.get('/:id', requireAuth, getUser);
-router.put('/:id', requireAuth, updateUser);
+router.get('/', getAllUsers);
+router.get('/:id', getUserById);
 
 export default router;

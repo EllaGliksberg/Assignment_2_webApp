@@ -1,10 +1,19 @@
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  passwordHash?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+import mongoose, { Schema, Document } from 'mongoose';
+
+export interface IUser {
+    username: string;
+    email: string;
+    password?: string;
+    refreshTokens?: string[];
 }
 
-// TODO: replace with a Mongoose/TypeORM/Prisma model as needed
+const userSchema = new Schema<IUser>({
+    username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    refreshTokens: { type: [String], default: [] },
+});
+
+
+const User = mongoose.model<IUser>('User', userSchema as any);
+export default User;
