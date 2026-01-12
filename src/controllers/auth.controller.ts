@@ -57,4 +57,33 @@ export async function login(req: Request, res: Response) {
   }
 }
 
+export async function refreshToken(req: Request, res: Response) {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) return res.status(400).json({ message: 'refreshToken required' });
+
+    let payload: any;
+    try {
+      payload = verifyRefreshToken(refreshToken);
+    } catch (e) {
+      return res.status(401).json({ message: 'Invalid refresh token' });
+    }
+
+    const user = await User.findOne({ refreshTokens: refreshToken });
+    if (!user) return res.status(401).json({ message: 'Invalid refresh token' });
+
+    // rotate refresh token
+    user.refreshTokens = (user.refreshTokens || []).filter((t: string) => t !== refreshToken);
+    const newRefresh = signRefreshToken({ id: user._id });
+    user.refreshTokens.push(newRefresh);
+    await user.save();
+
+    const accessToken = signAccessToken({ id: user._id });
+    return res.json({ accessToken, refreshToken: newRefresh });
+  } catch (err: any) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+}
 
