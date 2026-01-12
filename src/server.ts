@@ -1,12 +1,15 @@
-import dotenv from 'dotenv';
-import app from './app';
-import { loadEnv } from './config/env';
+import app from "./app";
+import mongoose from "mongoose";
 
-loadEnv();
+const port = process.env.PORT || 3000;
 
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Server running on port ${PORT}`);
-});
+mongoose.connect(process.env.DB_URL!)
+    .then(() => {
+        console.log("Connected to MongoDB");
+        app.listen(port, () => {
+            console.log(`Server is running on http://localhost:${port}`);
+        });
+    })
+    .catch((err) => {
+        console.error("MongoDB connection error:", err);
+    });
