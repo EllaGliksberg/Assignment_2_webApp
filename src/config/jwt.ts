@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { env } from './env';
+import crypto from 'crypto';
 
 // Small utility wrapper around jsonwebtoken. We use loose casts to keep the helpers short
 // and avoid verbose generics across the codebase. The functions return strings for tokens
@@ -10,7 +11,9 @@ export function signAccessToken(payload: object): string {
 }
 
 export function signRefreshToken(payload: object): string {
-  return jwt.sign(payload as any, env.refreshSecret as any, { expiresIn: env.refreshTokenExpiresIn as any });
+  // add a small random "jti" field to ensure refresh tokens are unique even when signed
+  const withJti = { ...(payload as any), jti: crypto.randomBytes(8).toString('hex') };
+  return jwt.sign(withJti as any, env.refreshSecret as any, { expiresIn: env.refreshTokenExpiresIn as any });
 }
 
 export function verifyAccessToken(token: string): any {
