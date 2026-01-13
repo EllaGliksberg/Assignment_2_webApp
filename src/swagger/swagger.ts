@@ -24,6 +24,46 @@ export const swaggerSpec = {
         },
         required: ['username', 'email', 'password'],
       },
+      User: {
+        type: 'object',
+        properties: {
+          _id: { type: 'string' },
+          username: { type: 'string' },
+          email: { type: 'string', format: 'email' },
+        },
+      },
+      UsersResponse: {
+        type: 'array',
+        items: { $ref: '#/components/schemas/User' },
+      },
+      Post: {
+        type: 'object',
+        properties: {
+          _id: { type: 'string' },
+          senderId: { type: 'string' },
+          content: { type: 'string' },
+          createdAt: { type: 'string', format: 'date-time' },
+          updatedAt: { type: 'string', format: 'date-time' },
+        },
+      },
+      PostsResponse: {
+        type: 'array',
+        items: { $ref: '#/components/schemas/Post' },
+      },
+      Comment: {
+        type: 'object',
+        properties: {
+          _id: { type: 'string' },
+          postId: { type: 'string' },
+          senderId: { type: 'string' },
+          content: { type: 'string' },
+          createdAt: { type: 'string', format: 'date-time' },
+        },
+      },
+      CommentsResponse: {
+        type: 'array',
+        items: { $ref: '#/components/schemas/Comment' },
+      },
       AuthResponse: {
         type: 'object',
         properties: {
@@ -79,6 +119,98 @@ export const swaggerSpec = {
         summary: 'Logout (revoke refresh token)',
         requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/LogoutRequest' } } } },
         responses: { '200': { description: 'OK' }, '400': { description: 'Bad Request' } },
+      },
+    },
+    '/users': {
+      get: {
+        tags: ['Users'],
+        summary: 'Get all users',
+        responses: { '200': { description: 'OK', content: { 'application/json': { schema: { $ref: '#/components/schemas/UsersResponse' } } } } },
+      },
+    },
+    '/users/{id}': {
+      get: {
+        tags: ['Users'],
+        summary: 'Get user by id',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: { '200': { description: 'OK', content: { 'application/json': { schema: { $ref: '#/components/schemas/User' } } } }, '404': { description: 'Not Found' } },
+      },
+      put: {
+        tags: ['Users'],
+        summary: 'Update user by id',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        requestBody: { required: true, content: { 'application/json': { schema: { type: 'object' } } } },
+        responses: { '200': { description: 'OK', content: { 'application/json': { schema: { $ref: '#/components/schemas/User' } } } }, '404': { description: 'Not Found' } },
+      },
+      delete: {
+        tags: ['Users'],
+        summary: 'Delete user by id',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: { '200': { description: 'OK' }, '404': { description: 'Not Found' } },
+      },
+    },
+    '/posts': {
+      get: {
+        tags: ['Posts'],
+        summary: 'Get posts (optionally filter by sender)',
+        parameters: [{ name: 'sender', in: 'query', required: false, schema: { type: 'string' } }],
+        responses: { '200': { description: 'OK', content: { 'application/json': { schema: { $ref: '#/components/schemas/PostsResponse' } } } } },
+      },
+      post: {
+        tags: ['Posts'],
+        summary: 'Create a post',
+        requestBody: { required: true, content: { 'application/json': { schema: { type: 'object' } } } },
+        responses: { '201': { description: 'Created', content: { 'application/json': { schema: { $ref: '#/components/schemas/Post' } } } } },
+      },
+    },
+    '/posts/{id}': {
+      get: {
+        tags: ['Posts'],
+        summary: 'Get post by id',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: { '200': { description: 'OK', content: { 'application/json': { schema: { $ref: '#/components/schemas/Post' } } } }, '404': { description: 'Not Found' } },
+      },
+      put: {
+        tags: ['Posts'],
+        summary: 'Update post by id',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        requestBody: { required: true, content: { 'application/json': { schema: { type: 'object' } } } },
+        responses: { '200': { description: 'OK', content: { 'application/json': { schema: { $ref: '#/components/schemas/Post' } } } }, '404': { description: 'Not Found' } },
+      },
+      delete: {
+        tags: ['Posts'],
+        summary: 'Delete post by id',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: { '200': { description: 'OK' }, '404': { description: 'Not Found' } },
+      },
+    },
+    '/comments': {
+      get: {
+        tags: ['Comments'],
+        summary: 'Get comments (optionally filter by postId)',
+        parameters: [{ name: 'postId', in: 'query', required: false, schema: { type: 'string' } }],
+        responses: { '200': { description: 'OK', content: { 'application/json': { schema: { $ref: '#/components/schemas/CommentsResponse' } } } } },
+      },
+      post: {
+        tags: ['Comments'],
+        summary: 'Add a comment',
+        requestBody: { required: true, content: { 'application/json': { schema: { type: 'object' } } } },
+        responses: { '201': { description: 'Created', content: { 'application/json': { schema: { $ref: '#/components/schemas/Comment' } } } } },
+      },
+    },
+    '/comments/{id}': {
+      put: {
+        tags: ['Comments'],
+        summary: 'Update comment by id',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        requestBody: { required: true, content: { 'application/json': { schema: { type: 'object' } } } },
+        responses: { '200': { description: 'OK', content: { 'application/json': { schema: { $ref: '#/components/schemas/Comment' } } } }, '404': { description: 'Not Found' } },
+      },
+      delete: {
+        tags: ['Comments'],
+        summary: 'Delete comment by id',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: { '200': { description: 'OK' }, '404': { description: 'Not Found' } },
       },
     },
   },
