@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 
-const TEST_DB_URI = process.env.TEST_DB_URI || '';
+const TEST_DB_URI = process.env.TEST_DB_URI || process.env.DB_URI || process.env.DB_URL || '';
 
 export async function connectTestDb() {
   if (!TEST_DB_URI) {
-    throw new Error('TEST_DB_URI environment variable is not set. Set it to your MongoDB test database URI.');
+    throw new Error('TEST_DB_URI or DB_URI environment variable is not set. Set it to your MongoDB test database URI.');
   }
-  await mongoose.connect(TEST_DB_URI, { dbName: undefined });
+  await mongoose.connect(TEST_DB_URI);
 }
 
 export async function clearTestDb() {

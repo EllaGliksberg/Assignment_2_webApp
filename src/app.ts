@@ -14,13 +14,12 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// mount swagger UI at /api/docs
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/api/auth', authRoutes);
-app.use('/users', userRoutes);
-app.use('/comments', commentRoutes);
-app.use('/posts', postRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/comments', commentRoutes);
+app.use('/api/posts', postRoutes);
 
 // global error handler
 app.use(errorHandler);
