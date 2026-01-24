@@ -72,9 +72,15 @@ export async function refreshToken(req: Request, res: Response) {
     const user = await User.findOne({ refreshTokens: refreshToken });
     if (!user) return res.status(401).json({ message: 'Invalid refresh token' });
 
-    // rotate refresh token
+    // rotate refresh token — ensure the new refresh token is different from the old one
     user.refreshTokens = (user.refreshTokens || []).filter((t: string) => t !== refreshToken);
-    const newRefresh = signRefreshToken({ id: user._id });
+    let newRefresh = signRefreshToken({ id: user._id });
+    // in the rare case the freshly signed token equals the old token (same iat etc), retry a few times
+    let attempts = 0;
+    while (newRefresh === refreshToken && attempts < 5) {
+      newRefresh = signRefreshToken({ id: user._id });
+      attempts += 1;
+    }
     user.refreshTokens.push(newRefresh);
     await user.save();
 
